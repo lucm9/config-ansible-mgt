@@ -1,25 +1,25 @@
 ---
 # tasks file for webserver
-- name: install apache
+- name: Install Apache
   become: true
   ansible.builtin.yum:
     name: "httpd"
     state: present
 
-- name: install git
+- name: Install Git
   become: true
   ansible.builtin.yum:
     name: "git"
     state: present
 
-- name: clone a repo
+- name: Clone a repo
   become: true
   ansible.builtin.git:
     repo: https://github.com/lucm9/tooling.git
     dest: /var/www/html
     force: yes
 
-- name: copy html content to one level up
+- name: Copy HTML content to one level up
   become: true
   ansible.builtin.command:
     cmd: cp -r /var/www/html/html/ /var/www/
@@ -41,28 +41,14 @@
   ansible.builtin.command:
     cmd: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.back
 
-- name: recursively remove /var/www/html/html/ directory
+- name: Recursively remove /var/www/html/html/ directory
   become: true
-  ansible.builtin.command:
-    cmd: rm -rf /var/www/html/html
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
 
-- name: Disable SELinux
+- name: Restart Apache
   become: true
-  tasks:
-    - name: Disable SELinux for the current session
-      ansible.builtin.seboolean:
-        name: selinuxuser_tcp_server
-        state: no
-        persistent: yes
-
-    - name: Set SELinux to permissive mode
-      ansible.builtin.selinux:
-        policy: targeted
-        state: permissive
-        persistent: yes
-
-    - name: Disable SELinux in the configuration file
-      ansible.builtin.lineinfile:
-        path: /etc/selinux/config
-        regexp: '^SELINUX='
-        line: 'SELINUX=disabled'
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
