@@ -24,3 +24,22 @@
       apt:
         name: wireshark
         state: latest
+
+- name: create directory and file and set timezone
+  hosts: nfs:db:webservers:lb
+  become: yes
+  tasks:
+  
+    - name: create a directory
+      file:
+        path: /home/sample
+        state: directory
+
+    - name: create a file
+      file:
+        path: /home/sample/test.txt
+        state: file
+    
+    - name : set timezone 
+      timezone:
+        name:US/New_york 
