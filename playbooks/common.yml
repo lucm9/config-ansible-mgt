@@ -11,7 +11,7 @@
         state: latest
 
 - name: update LB server and db server
-  hosts: lb
+  hosts: lb:db
   remote_user: ubuntu
   become: true
   become_user: root
