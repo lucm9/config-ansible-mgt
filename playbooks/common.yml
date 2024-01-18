@@ -27,7 +27,7 @@
 
 - name: create directory and file and set timezone
   hosts: nfs:db:webservers:lb
-  become: yes
+  become: true
   tasks:
     - name: create a directory
       file:
@@ -37,7 +37,7 @@
     - name: create a file
       file:
         path: /home/sample/test.txt
-        state: file
+        state: touch
     
     - name : set timezone 
       timezone:
