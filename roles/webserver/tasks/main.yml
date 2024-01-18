@@ -43,6 +43,26 @@
 
 - name: recursively remove /var/www/html/html/ directory
   become: true
-  ansible.builtin.file:
-    path: /var/www/html/html
-    state: absent
+  ansible.builtin.command:
+    cmd: rm -rf /var/www/html/html
+
+- name: Disable SELinux
+  become: true
+  tasks:
+    - name: Disable SELinux for the current session
+      ansible.builtin.seboolean:
+        name: selinuxuser_tcp_server
+        state: no
+        persistent: yes
+
+    - name: Set SELinux to permissive mode
+      ansible.builtin.selinux:
+        policy: targeted
+        state: permissive
+        persistent: yes
+
+    - name: Disable SELinux in the configuration file
+      ansible.builtin.lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: 'SELINUX=disabled'
