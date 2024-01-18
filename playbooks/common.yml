@@ -40,5 +40,5 @@
         state: file
     
     - name : set timezone 
-      tzdata:
+      timezone:
         name: "America/Chicago"
