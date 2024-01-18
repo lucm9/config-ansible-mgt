@@ -29,7 +29,6 @@
   hosts: nfs:db:webservers:lb
   become: yes
   tasks:
-  
     - name: create a directory
       file:
         path: /home/sample
@@ -41,5 +40,5 @@
         state: file
     
     - name : set timezone 
-      timezone:
-        name:US/New_york 
+      tzdata:
+        name: "America/Chicago"
