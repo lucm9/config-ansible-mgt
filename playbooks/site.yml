@@ -2,17 +2,21 @@
 - hosts: all
   name: Include dynamic variables 
   tasks:
-    - import_playbook: ../static-assignments/common.yml 
-    - include_tasks: ../dynamic-assignments/env-vars.yml
+    - name: Include common playbook
+      include_playbook: ../static-assignments/common.yml
+    - name: Include dynamic variables
+      include_tasks: ../dynamic-assignments/env-vars.yml
       tags:
         - always
 
 - hosts: uat-webservers
   name: uat Webserver assignment
   tasks:
-    - import_playbook: ../static-assignments/uat-webservers.yml
+    - name: Include uat-webservers playbook
+      include_playbook: ../static-assignments/uat-webservers.yml
 
 - hosts: lb
   name: Install Mysql-DB
   tasks:
-    - import_playbook: ../static-assignments/database.yml
+    - name: Include database playbook
+      include_playbook: ../static-assignments/database.yml
