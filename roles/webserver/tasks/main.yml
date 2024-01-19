@@ -110,6 +110,20 @@
   become: true
   ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
 
+- name: Move welcome.conf file if exists
+  become: true
+  tasks:
+    - name: Backup welcome.conf
+      ansible.builtin.command:
+        cmd: "mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.back"
+      ignore_errors: yes
+      register: result
+
+    - name: Skip task if welcome.conf was not present
+      ansible.builtin.fail:
+        msg: "welcome.conf does not exist, skipping task."
+      when: result.rc != 0
+
 # *************************************************************************
 # - name: configure-tooling-website
 #   import_tasks: "configure-tooling.yml"

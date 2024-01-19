@@ -39,6 +39,8 @@
     name: nginx
     state: restarted
 
+# Add cert to the loadbalancer
+
 - name: Install Certbot Snap
   become: true
   command: sudo snap install --classic certbot
