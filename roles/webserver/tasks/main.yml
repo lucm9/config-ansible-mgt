@@ -54,7 +54,7 @@
   become: false
   delegate_to: localhost
   vars:
-    wait_for_connection_timeout: 300
+    wait_for_connection_timeout: 400
 
 - name: Install Remi repository
   become: true
