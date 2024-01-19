@@ -42,6 +42,60 @@
     path: /var/www/html/html
     state: absent
 
+- name: Install Remi repository
+  become: true
+  ansible.builtin.shell: sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
+
+- name: Install Remi repository
+  become: true
+  ansible.builtin.shell: sudo dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+
+- name: Install dnf-utils
+  become: true
+  ansible.builtin.yum:
+    name: dnf-utils
+    state: present
+
+- name: Reset PHP module
+  become: true
+  ansible.builtin.shell: sudo yum module reset php -y
+
+- name: Install PHP modules from Remi
+  become: true
+  ansible.builtin.shell: sudo dnf module install php:remi-8.3 -y
+
+- name: Enable PHP module
+  become: true
+  ansible.builtin.shell: sudo yum module enable php:remi-8.3 -y
+
+- name: Install additional PHP packages
+  become: true
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php
+    - php-opcache
+    - php-gd
+    - php-curl
+    - php-mysqlnd
+
+- name: Start php-fpm service
+  become: true
+  ansible.builtin.service:
+    name: php-fpm
+    state: started
+
+- name: Enable php-fpm to start after reboot
+  become: true
+  ansible.builtin.service:
+    name: php-fpm
+    enabled: yes
+
+- name: Set SELinux boolean for httpd_execmem
+  become: true
+  ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
+
 # *************************************************************************
 # - name: configure-tooling-website
 #   import_tasks: "configure-tooling.yml"

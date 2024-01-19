@@ -38,3 +38,24 @@
   service:
     name: nginx
     state: restarted
+
+- name: Install Certbot Snap
+  become: true
+  command: sudo snap install --classic certbot
+
+- name: Install Certbot via APT
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - certbot
+    - python3-certbot-nginx
+
+- name: Reload Nginx
+  become: true
+  command: sudo nginx -s reload
+
+- name: Run Certbot for Nginx
+  become: true
+  command: sudo certbot --nginx -d lucdevops.online -d www.lucdevops.online
