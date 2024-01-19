@@ -43,5 +43,12 @@
     state: absent
 
 # *************************************************************************
-- name: configure-tooling-website
-  include_tasks: "configure-tooling.yml"
+# - name: configure-tooling-website
+#   import_tasks: "configure-tooling.yml"
+- name: Configure tooling website
+  become: true
+  tasks:
+    - name: configure-tooling-website
+      import_tasks: "configure-tooling.yml"
+
+    # Other tasks specific to your webserver configuration

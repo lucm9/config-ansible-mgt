@@ -1,13 +1,4 @@
 ---
-- name: Update the system
-  become: true
-  tasks:
-    - name: Perform system update
-      ansible.builtin.dnf:
-        name: '*'
-        state: latest
-        update_cache: yes
-
 - name: Reboot and Continue Tasks
   become: true
   tasks:
