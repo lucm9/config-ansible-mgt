@@ -42,19 +42,19 @@
     path: /var/www/html/html
     state: absent
 
-- name: Update system and reboot
-  become: true
-  ansible.builtin.shell: sudo dnf update -y && sudo reboot
-  async: 0
-  poll: 0
-  ignore_errors: yes
+# - name: Update system and reboot
+#   become: true
+#   ansible.builtin.shell: sudo dnf update -y && sudo reboot
+#   async: 0
+#   poll: 0
+#   ignore_errors: yes
 
-- name: Wait for the system to become responsive
-  local_action: wait_for_connection
-  become: false
-  delegate_to: localhost
-  vars:
-    wait_for_connection_timeout: 400
+# - name: Wait for the system to become responsive
+#   local_action: wait_for_connection
+#   become: false
+#   delegate_to: localhost
+#   vars:
+#     wait_for_connection_timeout: 400
 
 - name: Install Remi repository
   become: true
