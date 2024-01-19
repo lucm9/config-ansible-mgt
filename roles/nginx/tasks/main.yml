@@ -1,5 +1,11 @@
 ---
 # tasks file for nginx
+- name: Stop Apache2
+  become: true
+  service:
+    name: apache2
+    state: stopped
+
 - name: Install nginx
   become: true
   apt:
