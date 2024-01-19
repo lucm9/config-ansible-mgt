@@ -1,0 +1,38 @@
+---
+# tasks file for apache
+- name: Install Apache
+  become: true
+  apt:
+    name:
+      - apache2
+      - libxml2-dev
+    state: present
+
+- name: Ensure apache2 is started
+  become: true
+  service:
+    name: apache2
+    state: started
+
+- name: Enable apache modules
+  become: true
+  shell: |
+    a2enmod rewrite
+    a2enmod proxy
+    a2enmod proxy_balancer
+    a2enmod proxy_http
+    a2enmod headers
+    a2enmod lbmethod_bytraffic
+
+- name: Copy over apache config
+  become: true
+  blockinfile:
+    path: /etc/apache2/sites-available/000-default.conf
+    block: "{{ lookup('file', 'apache.conf') }}"
+    insertafter: '(.*VirtualHost \*\:80.*)'
+
+- name: Restart apache
+  become: true
+  service:
+    name: apache2
+    state: restarted

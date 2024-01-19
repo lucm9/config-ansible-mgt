@@ -1,0 +1,94 @@
+---
+- name: Update the system
+  become: true
+  tasks:
+    - name: Perform system update
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+        update_cache: yes
+
+- name: Reboot and Continue Tasks
+  become: true
+  tasks:
+    - name: Reboot the server
+      ansible.builtin.reboot:
+        reboot_timeout: 300  # Adjust the timeout as needed
+
+    - name: Wait for the server to become reachable
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 60
+        sleep: 5
+        delay: 10
+        timeout: 300  # Adjust the timeout to match reboot_timeout
+
+    # Continue with tasks after the reboot
+    - name: Example task after reboot
+      ansible.builtin.debug:
+        msg: "This task runs after the server rebooted"
+
+    - name: Install EPEL repository
+      ansible.builtin.yum:
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm"
+        state: present
+
+    - name: Install Remi repository
+      ansible.builtin.yum:
+        name: "https://rpms.remirepo.net/enterprise/remi-release-9.rpm"
+        state: present
+
+- name: Install required packages for PHP
+  become: true
+  tasks:
+    - name: Install dnf-utils
+      ansible.builtin.yum:
+        name: dnf-utils
+        state: present
+
+    - name: Reset PHP module
+      ansible.builtin.yum:
+        name: '@php'
+        state: absent
+
+    - name: Install PHP module
+      ansible.builtin.dnf:
+        name: php:remi-8.1
+        state: present
+
+    - name: Enable PHP module
+      ansible.builtin.yum:
+        name: php:remi-8.1
+        state: enabled
+
+    - name: Install PHP and required extensions
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - php
+        - php-opcache
+        - php-gd
+        - php-curl
+        - php-mysqlnd
+
+- name: Start and enable PHP-FPM
+  become: true
+  tasks:
+    - name: Start PHP-FPM service
+      ansible.builtin.service:
+        name: php-fpm
+        state: started
+
+    - name: Enable PHP-FPM service
+      ansible.builtin.service:
+        name: php-fpm
+        enabled: yes
+
+- name: Set SELinux boolean for httpd_execmem
+  become: true
+  tasks:
+    - name: Set SELinux boolean
+      ansible.builtin.selinux:
+        boolean: httpd_execmem
+        state: yes
+        persistent: yes

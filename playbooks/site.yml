@@ -7,9 +7,10 @@
   tags:
     - always
 
-- hosts: webservers
-- name: Webserver assignment
-  import_playbook: ../static-assignments/webservers.yml
+- hosts: uat-webservers
+- name: uat Webserver assignment
+  import_playbook: ../static-assignments/uat-webservers.yml
 
-# - hosts: uat-webservers
-# - import_playbook : ../static-assignments/uat-webservers.yml
+- hosts: lb
+- name : Install Mysql-DB
+  import_playbook: ../static-assignments/database.yml
