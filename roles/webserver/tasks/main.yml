@@ -36,11 +36,6 @@
     name: httpd
     enabled: yes
 
-- name: Move welcome.conf to backup
-  become: true
-  ansible.builtin.command:
-    cmd: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.back
-
 - name: Recursively remove /var/www/html/html/ directory
   become: true
   ansible.builtin.file:
