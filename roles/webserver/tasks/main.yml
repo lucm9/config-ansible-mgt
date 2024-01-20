@@ -1,62 +1,35 @@
 ---
-# tasks file for webserver
-- name: Install Apache
+- name: install apache
   become: true
-  ansible.builtin.yum:
-    name: "httpd"
+  yum:
+    name: httpd
     state: present
 
-- name: Install Git
+- name: install git
   become: true
-  ansible.builtin.yum:
-    name: "git"
+  yum:
+    name: git
     state: present
 
-- name: Clone a repo
+- name: clone tooling repo
   become: true
-  ansible.builtin.git:
+  git:
     repo: https://github.com/lucm9/tooling.git
     dest: /var/www/html
     force: yes
 
-- name: Copy HTML content to one level up
+- name: copy html content to one level up
   become: true
-  ansible.builtin.command:
-    cmd: cp -r /var/www/html/html/ /var/www/
+  command: cp -r /var/www/html/html/ /var/www/
 
-- name: Start service httpd, if not started
+- name: start httpd service
   become: true
-  ansible.builtin.service:
+  service:
     name: httpd
     state: started
 
-- name: Enable httpd to start after reboot
+- name: recursively remove /var/www/html/html/ directory
   become: true
-  ansible.builtin.service:
-    name: httpd
-
-- name: Recursively remove /var/www/html/html/ directory
-  become: true
-  ansible.builtin.file:
+  file:
     path: /var/www/html/html
     state: absent
-
-# - name: Comment out lines in welcome.conf
-#   become: true
-#   ansible.builtin.replace:
-#     path: /etc/httpd/conf.d/welcome.conf
-#     regexp: '^(.*)$'
-#     replace: '# \1'
-
-- name: Restart Apache HTTP Server
-  become: true
-  ansible.builtin.service:
-    name: httpd
-    state: restarted
-
-
-# *************************************************************************
-# - name: configure-tooling-website
-#   import_tasks: "configure-tooling.yml"
-
- 
