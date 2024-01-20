@@ -58,6 +58,12 @@
   become: true
   command: sudo nginx -s reload
 
-- name: Run Certbot for Nginx
+- name: Check if SSL certificate is already present
+  stat:
+    path: "/etc/letsencrypt/live/lucdevops.online/fullchain.pem"
+  register: cert_check
+
+- name: Run Certbot for Nginx if certificate is not present
   become: true
-  command: sudo certbot --nginx -d lucdevops.online -d www.lucdevops.online
+  command: "sudo certbot --nginx -d lucdevops.online -d www.lucdevops.online"
+  when: not cert_check.stat.exists

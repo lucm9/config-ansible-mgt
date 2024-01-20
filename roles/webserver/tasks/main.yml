@@ -106,9 +106,9 @@
     name: php-fpm
     enabled: yes
 
-- name: Set SELinux boolean for httpd_execmem
-  become: true
-  ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
+# - name: Set SELinux boolean for httpd_execmem
+#   become: true
+#   ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
 
 - name: Comment out lines in welcome.conf
   become: true
