@@ -1,60 +1,15 @@
 ---
 # tasks file for webserver
-- name: Install Apache
+- name: Update Linux System
   become: true
-  ansible.builtin.yum:
-    name: "httpd"
-    state: present
+  package:
+    name: '*'
+    state: latest
 
-- name: Install Git
+- name: Linux Reboot Demo
   become: true
-  ansible.builtin.yum:
-    name: "git"
-    state: present
-
-- name: Clone a repo
-  become: true
-  ansible.builtin.git:
-    repo: https://github.com/lucm9/tooling.git
-    dest: /var/www/html
-    force: yes
-
-- name: Copy HTML content to one level up
-  become: true
-  ansible.builtin.command:
-    cmd: cp -r /var/www/html/html/ /var/www/
-
-- name: Start service httpd, if not started
-  become: true
-  ansible.builtin.service:
-    name: httpd
-    state: started
-
-- name: Enable httpd to start after reboot
-  become: true
-  ansible.builtin.service:
-    name: httpd
-    enabled: yes
-
-- name: Recursively remove /var/www/html/html/ directory
-  become: true
-  ansible.builtin.file:
-    path: /var/www/html/html
-    state: absent
-
-# - name: Update system and reboot
-#   become: true
-#   ansible.builtin.shell: sudo dnf update -y && sudo reboot
-#   async: 0
-#   poll: 0
-#   ignore_errors: yes
-
-# - name: Wait for the system to become responsive
-#   local_action: wait_for_connection
-#   become: false
-#   delegate_to: localhost
-#   vars:
-#     wait_for_connection_timeout: 400
+  reboot:
+    reboot_timeout: 420
 
 - name: Install Remi repository
   become: true
@@ -110,6 +65,61 @@
 #   become: true
 #   ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
 
+- name: Install Apache
+  become: true
+  ansible.builtin.yum:
+    name: "httpd"
+    state: present
+
+- name: Install Git
+  become: true
+  ansible.builtin.yum:
+    name: "git"
+    state: present
+
+- name: Clone a repo
+  become: true
+  ansible.builtin.git:
+    repo: https://github.com/lucm9/tooling.git
+    dest: /var/www/html
+    force: yes
+
+- name: Copy HTML content to one level up
+  become: true
+  ansible.builtin.command:
+    cmd: cp -r /var/www/html/html/ /var/www/
+
+- name: Start service httpd, if not started
+  become: true
+  ansible.builtin.service:
+    name: httpd
+    state: started
+
+- name: Enable httpd to start after reboot
+  become: true
+  ansible.builtin.service:
+    name: httpd
+
+- name: Recursively remove /var/www/html/html/ directory
+  become: true
+  ansible.builtin.file:
+    path: /var/www/html/html
+    state: absent
+
+# - name: Update system and reboot
+#   become: true
+#   ansible.builtin.shell: sudo dnf update -y && sudo reboot
+#   async: 0
+#   poll: 0
+#   ignore_errors: yes
+
+# - name: Wait for the system to become responsive
+#   local_action: wait_for_connection
+#   become: false
+#   delegate_to: localhost
+#   vars:
+#     wait_for_connection_timeout: 400
+
 - name: Comment out lines in welcome.conf
   become: true
   ansible.builtin.replace:
@@ -128,3 +138,5 @@
 # *************************************************************************
 # - name: configure-tooling-website
 #   import_tasks: "configure-tooling.yml"
+
+ 
