@@ -1,70 +1,5 @@
 ---
 # tasks file for webserver
-- name: Update Linux System
-  become: true
-  package:
-    name: '*'
-    state: latest
-
-- name: Linux Reboot Demo
-  become: true
-  reboot:
-    reboot_timeout: 420
-
-- name: Install Remi repository
-  become: true
-  ansible.builtin.shell: sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-
-- name: Install Remi repository
-  become: true
-  ansible.builtin.shell: sudo dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm
-
-- name: Install dnf-utils
-  become: true
-  ansible.builtin.yum:
-    name: dnf-utils
-    state: present
-
-- name: Reset PHP module
-  become: true
-  ansible.builtin.shell: sudo yum module reset php -y
-
-- name: Install PHP modules from Remi
-  become: true
-  ansible.builtin.shell: sudo dnf module install php:remi-8.3 -y
-
-- name: Enable PHP module
-  become: true
-  ansible.builtin.shell: sudo yum module enable php:remi-8.3 -y
-
-- name: Install additional PHP packages
-  become: true
-  ansible.builtin.yum:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - php
-    - php-opcache
-    - php-gd
-    - php-curl
-    - php-mysqlnd
-
-- name: Start php-fpm service
-  become: true
-  ansible.builtin.service:
-    name: php-fpm
-    state: started
-
-- name: Enable php-fpm to start after reboot
-  become: true
-  ansible.builtin.service:
-    name: php-fpm
-    enabled: yes
-
-# - name: Set SELinux boolean for httpd_execmem
-#   become: true
-#   ansible.builtin.shell: sudo setsebool -P httpd_execmem 1
-
 - name: Install Apache
   become: true
   ansible.builtin.yum:
@@ -106,33 +41,19 @@
     path: /var/www/html/html
     state: absent
 
-# - name: Update system and reboot
+
+# - name: Comment out lines in welcome.conf
 #   become: true
-#   ansible.builtin.shell: sudo dnf update -y && sudo reboot
-#   async: 0
-#   poll: 0
-#   ignore_errors: yes
-
-# - name: Wait for the system to become responsive
-#   local_action: wait_for_connection
-#   become: false
-#   delegate_to: localhost
-#   vars:
-#     wait_for_connection_timeout: 400
-
-- name: Comment out lines in welcome.conf
-  become: true
-  ansible.builtin.replace:
-    path: /etc/httpd/conf.d/welcome.conf
-    regexp: '^(.*)$'
-    replace: '# \1'
+#   ansible.builtin.replace:
+#     path: /etc/httpd/conf.d/welcome.conf
+#     regexp: '^(.*)$'
+#     replace: '# \1'
 
 - name: Restart Apache HTTP Server
   become: true
   ansible.builtin.service:
     name: httpd
     state: restarted
-
 
 
 # *************************************************************************
