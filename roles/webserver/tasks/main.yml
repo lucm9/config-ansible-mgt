@@ -40,5 +40,14 @@
   loop:
     - systemctl stop httpd
     - systemctl disable httpd
-    - mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.disabled
+    - name: Check if welcome.conf exists
+      stat:
+        path: /etc/httpd/conf.d/welcome.conf
+      register: welcome_conf_stat
+      ignore_errors: yes
+
+    - name: Move welcome.conf if it exists
+      command: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.disabled
+      when: welcome_conf_stat.stat.exists
+
     - systemctl restart httpd
