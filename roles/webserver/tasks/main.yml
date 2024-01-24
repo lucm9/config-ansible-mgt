@@ -34,7 +34,11 @@
     path: /var/www/html/html
     state: absent
 
-- name: disable default Apache site 
-  shell: a2dissite 000-default.conf
-  become: true 
-  notify: restart apache
+- name: disable default Apache site on Red Hat-based systems
+  become: true
+  command: "{{ item }}"
+  loop:
+    - systemctl stop httpd
+    - systemctl disable httpd
+    - mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.disabled
+    - systemctl restart httpd
