@@ -1,4 +1,3 @@
-  # config-mgt
   # This is the README file for the config-mgt project.
 
   ## Description
