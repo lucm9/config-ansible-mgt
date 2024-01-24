@@ -36,18 +36,27 @@
 
 - name: disable default Apache site on Red Hat-based systems
   become: true
-  command: "{{ item }}"
-  loop:
-    - systemctl stop httpd
-    - systemctl disable httpd
+  block:
+    - name: Stop httpd service
+      command: systemctl stop httpd
+      ignore_errors: yes
+
+    - name: Disable httpd service
+      command: systemctl disable httpd
+      ignore_errors: yes
+
     - name: Check if welcome.conf exists
       stat:
         path: /etc/httpd/conf.d/welcome.conf
       register: welcome_conf_stat
-      ignore_errors: yes
+      ignore_errors: True
 
     - name: Move welcome.conf if it exists
       command: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.disabled
       when: welcome_conf_stat.stat.exists
+      ignore_errors: yes
 
-    - systemctl restart httpd
+    - name: Restart httpd service
+      command: systemctl restart httpd
+      ignore_errors: yes
+  when: "'Red Hat' in ansible_distribution and ansible_distribution_major_version|int >= 7"
